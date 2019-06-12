@@ -1,10 +1,15 @@
 const Koa = require('koa');
-const app = new Koa();
+const Router = require('koa-router');
+const getImage = require('./utils');
 
 const PORT = process.env.PORT || 3000;
 
-app.use(ctx => {
-  ctx.body = 'Hello world';
+const app = new Koa();
+var router = new Router();
+
+router.get('/:index?', async ctx => {
+  ctx.body = await getImage(~~ctx.params.index);
 });
 
+app.use(router.routes()).use(router.allowedMethods());
 app.listen(PORT);
