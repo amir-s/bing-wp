@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node index.js"
   },
+  "engines": {
+    "node": "12.x"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/amir-s/bing-wp.git"
@@ -15,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/amir-s/bing-wp/issues"
   },
-  "homepage": "https://github.com/amir-s/bing-wp#readme"
+  "homepage": "https://github.com/amir-s/bing-wp#readme",
+  "dependencies": {
+    "koa": "^2.7.0",
+    "node-fetch": "^2.6.0"
+  }
 }
