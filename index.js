@@ -1,5 +1,7 @@
 const Koa = require('koa');
 const Router = require('koa-router');
+const cors = require('@koa/cors');
+
 const getImage = require('./utils');
 
 const PORT = process.env.PORT || 3000;
@@ -11,5 +13,8 @@ router.get('/:index?', async ctx => {
   ctx.body = await getImage(~~ctx.params.index);
 });
 
-app.use(router.routes()).use(router.allowedMethods());
+app
+  .use(cors())
+  .use(router.routes())
+  .use(router.allowedMethods());
 app.listen(PORT);
