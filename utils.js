@@ -4,12 +4,12 @@ async function getImage(index = 0) {
   const URL = `https://www.bing.com/HPImageArchive.aspx?format=js&idx=${index}&n=1`;
   const response = await fetch(URL);
   const {
-    images: [{ url, copyright, copyrightlink, title }],
+    images: [{ url, copyright, copyrightlink: link, title }],
   } = await response.json();
   return {
     title,
     url: `https://bing.com${url}`,
-    copyrightlink,
+    link,
     description: parseDescription(copyright),
   };
 }
