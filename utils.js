@@ -7,11 +7,35 @@ async function getImage(index = 0) {
     images: [{ url, copyright, copyrightlink, title }],
   } = await response.json();
   return {
-    url: `https://bing.com${url}`,
-    copyright,
-    copyrightlink,
     title,
+    url: `https://bing.com${url}`,
+    copyrightlink,
+    description: parseDescription(copyright),
   };
 }
 
-module.exports = getImage;
+function parseDescription(description) {
+  console.log(description);
+  const parsed = /([^,]*)(?:, )?(.*) \(©([^\/]*)\/?(.*)\)/.exec(description);
+
+  if (!parsed) {
+    return {
+      title: '',
+      location: '',
+      photographer: '',
+      source: '',
+    };
+  }
+
+  return {
+    title: parsed[1].trim(),
+    location: parsed[2].trim(),
+    photographer: parsed[3].trim(),
+    source: parsed[4].trim(),
+  };
+}
+
+module.exports = {
+  getImage,
+  parseDescription,
+};

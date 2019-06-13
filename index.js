@@ -2,9 +2,9 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const cors = require('@koa/cors');
 
-const getImage = require('./utils');
+const { getImage } = require('./utils');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 const app = new Koa();
 var router = new Router();
@@ -17,4 +17,5 @@ app
   .use(cors())
   .use(router.routes())
   .use(router.allowedMethods());
+
 app.listen(PORT);
