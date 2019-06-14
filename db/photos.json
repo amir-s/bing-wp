@@ -1,4 +1,4 @@
-(module.exports = [
+[
   {
     "title": "A unique elephant encounter in Nantes © Dutourdumonde Photography/Shutterstock",
     "description": "Created by François Delarozière, Pierre Orefice, and their team of artists and engineers at La Machine Company workshop, the Grand Éléphant was the first of three artworks/attractions constructed for the Machines de l’île (Machines of the Isle) in Nantes. The elephant is a mechanical sculpture that’s so big it can take up to 49 passengers for a 45-minute walk. After unveiling the elephant in 2007 and the Carrousel des Mondes Marins (Marine World Carousel) in 2012, they\"re now working on an ambitious third project, L’Arbre aux Hérons (Tree of Herons), scheduled for 2022. The efforts of these visionary creators have turned a shuttered industrial shipyard on the Loire River into a unique place where art, architecture, tourism, and urban planning come together to delight all who visit.",
@@ -3646,4 +3646,4 @@
     "link": "https://www.bing.com//search?q=gardens+by+the+bay%2c+singapore&form=hpcapt&filters=HpDate%3a%2220180108_0800%22",
     "date": "Jan 8, 2018"
   }
-])
+]

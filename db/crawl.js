@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const $$ = require('cheerio');
 const fs = require('fs');
-const { parseDescription } = require('./utils');
+const { parseDescription } = require('../utils');
 
 const BASE = 'https://bing.gifposter.com';
 async function get(url) {
@@ -62,11 +62,13 @@ function clean() {
 
     const normalizedTitle = title.replace(/\s/gi, ' ').replace('©', '(©') + ')';
     const description = parseDescription(normalizedTitle);
+    let normalizedLink = link.replace('//search', '/search');
+    if (normalizedLink === 'https://www.bing.com/') normalizedLink = null;
 
     return {
       title: description.title,
       url,
-      link,
+      link: normalizedLink,
       description,
     };
   });
