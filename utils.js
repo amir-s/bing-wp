@@ -15,7 +15,6 @@ async function getImage(index = 0) {
 }
 
 function parseDescription(description) {
-  console.log(description);
   const parsed = /([^,]*)(?:, )?(.*) \(©([^\/]*)\/?(.*)\)/.exec(description);
 
   if (!parsed) {
