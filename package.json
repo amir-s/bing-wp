@@ -27,6 +27,7 @@
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "now": "^15.5.0"
+    "now": "^15.5.0",
+    "pretty": "^2.0.0"
   }
 }

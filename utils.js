@@ -1,4 +1,6 @@
 const fetch = require('node-fetch');
+const cheerio = require('cheerio');
+const pretty = require('pretty');
 
 async function getImage(index = 0) {
   const URL = `https://www.bing.com/HPImageArchive.aspx?format=js&idx=${index}&n=1`;
@@ -34,38 +36,50 @@ function parseDescription(description) {
   };
 }
 
-async function getStock(symbol, market = 'nyse') {
-  const r = await fetch(`https://www.google.com/search?q=${symbol}+${market}`);
-  const d = await r.text();
-  const $ = cheerio.load(d);
-  const rawPrice = $('span:contains("Stock Price")')
-    .parent()
-    .next()
-    .next()
-    .text();
+function parseStockDetail(raw) {
+  const data = /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)(?:After hours:[ \.\d]+\([\d\.%]+\))?([^ ]*)\((.*)\)/.exec(
+    raw
+  );
 
-  const priceRegex = /(\d+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)/;
-  const priceData = priceRegex.exec(rawPrice);
-  if (!priceData) return null;
+  if (!data) return null;
 
-  const rawCurrency = $('span:contains("Currency in ") span').text();
-  const currencyRegex = /Currency in ([^ ]*)/;
-  const currencyData = currencyRegex.exec(rawCurrency);
-
+  const currencyData = /Currency in ([^ ]*)/.exec(raw);
   const currency = currencyData && currencyData[1];
 
   return {
-    symbol: symbol.toUpperCase(),
-    market: market.toUpperCase(),
-    price: priceData[1],
-    change: priceData[2],
-    changePercentage: priceData[3],
+    symbol: data[4].toUpperCase(),
+    market: data[5].toUpperCase(),
+    price: data[1],
+    change: data[2],
+    changePercentage: data[3],
     currency,
   };
+}
+const MARKETS = ['TSE', 'TSX', 'TSX-V', 'NASDAQ', 'NYSE', 'AMEX', 'OTCBB', 'INDEXSP'];
+
+async function getStock(symbol, market = 'NYSE') {
+  if (!MARKETS.includes(market) || !symbol) {
+    return null;
+  }
+
+  const r = await fetch(`https://www.google.com/search?q=${escape(symbol)}+${escape(market)}`);
+  const d = await r.text();
+  const $ = cheerio.load(d);
+
+  const rawData = $('span:contains("Stock Price")')
+    .parent()
+    .parent()
+    .find(' > div')
+    .find(' > div')
+    .text()
+    .replace(/\n/g, '');
+
+  return parseStockDetail(rawData);
 }
 
 module.exports = {
   getImage,
   parseDescription,
   getStock,
+  parseStockDetail,
 };
