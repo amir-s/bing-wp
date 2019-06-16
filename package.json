@@ -1,7 +1,7 @@
 {
-  "name": "bing-wp",
+  "name": "hello-data",
   "version": "0.0.1",
-  "description": "daily bing wallpaper",
+  "description": "backend for the hello chrome extension",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/amir-s/bing-wp.git"
+    "url": "git+https://github.com/amir-s/hello-data.git"
   },
   "author": "Amir Saboury",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/amir-s/bing-wp/issues"
+    "url": "https://github.com/amir-s/hello-data/issues"
   },
-  "homepage": "https://github.com/amir-s/bing-wp#readme",
+  "homepage": "https://github.com/amir-s/hello-data#readme",
   "dependencies": {
     "@koa/cors": "^2.2.3",
     "cheerio": "^1.0.0-rc.3",
