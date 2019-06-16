@@ -27,4 +27,3 @@ app
   .use(router.allowedMethods());
 
 module.exports = app.callback();
-// app.listen(PORT);

@@ -4,7 +4,7 @@
   "description": "backend for the hello chrome extension",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "now dev"
   },
   "engines": {
     "node": "12.x"
@@ -27,6 +27,6 @@
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
-    "pretty": "^2.0.0"
+    "now": "^15.5.0"
   }
 }
