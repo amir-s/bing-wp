@@ -37,7 +37,9 @@ function parseDescription(description) {
 }
 
 function parseStockDetail(raw) {
-  const data = /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)(?:After hours:[ \.\d]+\([\d\.%]+\))?([^ ]*)\((.*)\)/.exec(
+  console.log(raw);
+
+  const data = /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)(?:After hours:[ \.\d-\+]+\([\d\.%]+\))?([^ ]*)\((.*)\)/.exec(
     raw
   );
 

@@ -42,7 +42,7 @@ router.get('/', ctx => {
 });
 
 router.get('/version', ctx => {
-  ctx.body = { version: '0.0.1' };
+  ctx.body = { version: '0.0.2' };
 });
 
 router.get('*', ctx => {

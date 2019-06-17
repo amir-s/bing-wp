@@ -18,9 +18,9 @@ const tests = [
     output: {
       symbol: 'SHOP',
       market: 'NYSE',
-      price: '305.20',
-      change: '+0.09',
-      changePercentage: '0.03',
+      price: '305.11',
+      change: '-1.88',
+      changePercentage: '0.61',
       currency: 'USD',
     },
   },
