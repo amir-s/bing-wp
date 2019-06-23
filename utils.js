@@ -37,8 +37,6 @@ function parseDescription(description) {
 }
 
 function parseStockDetail(raw) {
-  console.log(raw);
-
   const data = /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)(?:After hours:[ \.\d-\+]+\([\d\.%]+\))?([^ ]*)\((.*)\)/.exec(
     raw
   );
@@ -79,9 +77,56 @@ async function getStock(symbol, market = 'NYSE') {
   return parseStockDetail(rawData);
 }
 
+async function getCrypto(id) {
+  try {
+    const r = await fetch(`https://coinmarketcap.com/currencies/${id}`);
+    const d = await r.text();
+    const $ = cheerio.load(d);
+
+    const name = $('.details-panel-item--name')
+      .clone()
+      .children()
+      .remove()
+      .end()
+      .text()
+      .trim();
+
+    const symbol = $('.details-panel-item--name span')
+      .text()
+      .replace(/[\(\)]/g, '')
+      .trim();
+
+    const price = $('[data-currency-price]')
+      .data('usd')
+      .toFixed(2);
+
+    const currency = $('.details-panel-item--price [data-currency-code]')
+      .text()
+      .trim();
+
+    const changePercentage = $('.details-panel-item--price .h2 [data-format-percentage]')
+      .text()
+      .trim();
+
+    const logo = $('.logo-32x32').attr('src');
+
+    return {
+      name,
+      symbol,
+      price,
+      currency,
+      changePercentage,
+      logo,
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
 module.exports = {
   getImage,
   parseDescription,
   getStock,
   parseStockDetail,
+  getCrypto,
 };
