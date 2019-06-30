@@ -3,7 +3,7 @@ const Router = require('koa-router');
 const cors = require('@koa/cors');
 const photos = require('./db/parsed');
 
-const { getImage, getStock, getCrypto } = require('./utils');
+const { getImage, getStock, getCrypto, getWeather } = require('./utils');
 
 const app = new Koa();
 var router = new Router();
@@ -50,6 +50,26 @@ router.get('/v1/crypto/:handle', async ctx => {
   }
 
   const data = await getCrypto(handle);
+
+  if (!data) {
+    ctx.status = 404;
+    ctx.body = 'Not found';
+    return;
+  }
+
+  ctx.body = data;
+});
+
+router.get('/v1/weather/:city', async ctx => {
+  const city = ctx.params.city.trim().toLowerCase();
+
+  if (!city) {
+    ctx.status = 404;
+    ctx.body = 'Not found';
+    return;
+  }
+
+  const data = await getWeather(city);
 
   if (!data) {
     ctx.status = 404;

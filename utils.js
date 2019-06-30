@@ -122,6 +122,40 @@ async function getCrypto(id) {
     return null;
   }
 }
+async function getWeather(city) {
+  try {
+    const r = await fetch(`https://www.google.com/search?q=${escape(city)}+weather`);
+    const d = await r.text();
+    const $ = cheerio.load(d);
+    const location = $('span:contains("Weather").BNeawe')
+      .parent()
+      .prev()
+      .prev()
+      .text();
+
+    const data = [];
+    $('span:contains("Weather").BNeawe')
+      .parent()
+      .parent()
+      .parent()
+      .find('div.BNeawe > div')
+      .each(function() {
+        data.push(cheerio(this).text());
+      });
+
+    const [temperatureString, detail] = data;
+    const temperature = temperatureString.replace(/[^\d]/g, '');
+    const label = detail.split('\n').pop();
+
+    return {
+      location,
+      temperature,
+      label,
+    };
+  } catch (_) {
+    return null;
+  }
+}
 
 module.exports = {
   getImage,
@@ -129,4 +163,5 @@ module.exports = {
   getStock,
   parseStockDetail,
   getCrypto,
+  getWeather,
 };
