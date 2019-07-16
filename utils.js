@@ -67,13 +67,15 @@ async function getStock(symbol, market = 'NYSE') {
   const $ = cheerio.load(d);
 
   const rawData = $('span:contains("Stock Price")')
-    .parent()
-    .parent()
-    .find(' > div')
-    .find(' > div')
-    .text()
-    .replace(/\n/g, '');
-
+  .parent()
+  .parent()
+  .find(' > div')
+  .find(' > div')
+  .text()
+  .replace(/\n/g, '');
+  
+  console.log(rawData);
+  
   return parseStockDetail(rawData);
 }
 
