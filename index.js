@@ -19,6 +19,7 @@ router.get('/v1/photo/:index?', async ctx => {
 
 router.get('/v1/stock/:symbol/:market?', async ctx => {
   const symbol = ctx.params.symbol.replace(/\s/g, '').toUpperCase();
+  
   if (!symbol) {
     ctx.status = 404;
     ctx.body = 'Not found';
@@ -26,9 +27,11 @@ router.get('/v1/stock/:symbol/:market?', async ctx => {
   }
 
   const market = ctx.params.market && ctx.params.market.replace(/\s/g, '').toUpperCase();
-
+  
+  console.log(symbol, market);
+  
   const data = await getStock(symbol, market);
-
+  
   if (!data) {
     ctx.status = 404;
     ctx.body = 'Not found';
