@@ -19,7 +19,8 @@ router.get('/v1/photo/:index?', async ctx => {
 
 router.get('/v1/stock/:symbol/:market?', async ctx => {
   const symbol = ctx.params.symbol.replace(/\s/g, '').toUpperCase();
-  
+  const format = (ctx.query.format || 'json').toLowerCase();
+
   if (!symbol) {
     ctx.status = 404;
     ctx.body = 'Not found';
@@ -37,10 +38,17 @@ router.get('/v1/stock/:symbol/:market?', async ctx => {
     ctx.body = 'Not found';
     return;
   }
-  ctx.body = data;
+
+  if (format === 'json') {
+    ctx.body = data;
+  } else if (format === 'text') {
+    ctx.body = data.price;
+  }
 });
 
 router.get('/v1/crypto/:handle', async ctx => {
+  const format = (ctx.query.format || 'json').toLowerCase();
+
   const handle = ctx.params.handle
     .trim()
     .replace(/\s/g, '-')
@@ -60,7 +68,11 @@ router.get('/v1/crypto/:handle', async ctx => {
     return;
   }
 
-  ctx.body = data;
+  if (format === 'json') {
+    ctx.body = data;
+  } else if (format === 'text') {
+    ctx.body = data.price;
+  }
 });
 
 router.get('/v1/weather/:city', async ctx => {
@@ -88,7 +100,7 @@ router.get('/', ctx => {
 });
 
 router.get('/version', ctx => {
-  ctx.body = { version: '0.0.3' };
+  ctx.body = { version: '0.0.4' };
 });
 
 router.get('*', ctx => {
