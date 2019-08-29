@@ -100,7 +100,7 @@ router.get('/', ctx => {
 });
 
 router.get('/version', ctx => {
-  ctx.body = { version: '0.0.4' };
+  ctx.body = { version: '0.0.5' };
 });
 
 router.get('*', ctx => {

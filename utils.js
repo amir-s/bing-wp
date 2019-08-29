@@ -63,6 +63,7 @@ async function getStock(symbol, market = 'NYSE') {
   }
 
   const r = await fetch(`https://www.google.com/search?q=${escape(symbol)}+${escape(market)}`);
+  console.log('status=', r.status);
   const d = await r.text();
   const $ = cheerio.load(d);
 
