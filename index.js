@@ -1,6 +1,10 @@
+require('dotenv').config();
+
 const Koa = require('koa');
 const Router = require('koa-router');
 const cors = require('@koa/cors');
+const logger = require('koa-logger');
+
 const photos = require('./db/parsed');
 
 const { getImage, getStock, getCrypto, getWeather } = require('./utils');
@@ -27,12 +31,13 @@ router.get('/v1/stock/:symbol/:market?', async ctx => {
     return;
   }
 
-  const market = ctx.params.market && ctx.params.market.replace(/\s/g, '').toUpperCase();
-  
+  const market =
+    ctx.params.market && ctx.params.market.replace(/\s/g, '').toUpperCase();
+
   console.log(symbol, market);
-  
+
   const data = await getStock(symbol, market);
-  
+
   if (!data) {
     ctx.status = 404;
     ctx.body = 'Not found';
@@ -49,10 +54,7 @@ router.get('/v1/stock/:symbol/:market?', async ctx => {
 router.get('/v1/crypto/:handle', async ctx => {
   const format = (ctx.query.format || 'json').toLowerCase();
 
-  const handle = ctx.params.handle
-    .trim()
-    .replace(/\s/g, '-')
-    .toLowerCase();
+  const handle = ctx.params.handle.trim().replace(/\s/g, '-').toLowerCase();
 
   if (!handle) {
     ctx.status = 404;
@@ -100,7 +102,7 @@ router.get('/', ctx => {
 });
 
 router.get('/version', ctx => {
-  ctx.body = { version: '0.0.5' };
+  ctx.body = { version: '0.0.6' };
 });
 
 router.get('*', ctx => {
@@ -108,9 +110,8 @@ router.get('*', ctx => {
   ctx.body = 'Not found';
 });
 
-app
-  .use(cors())
-  .use(router.routes())
-  .use(router.allowedMethods());
+app.use(logger()).use(cors()).use(router.routes()).use(router.allowedMethods());
 
-module.exports = app.callback();
+app.listen(process.env.WEB_PORT, process.env.WEB_HOST, () =>
+  console.log(`Started server on port #${process.env.WEB_PORT}`)
+);
