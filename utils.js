@@ -55,28 +55,39 @@ function parseStockDetail(raw) {
     currency,
   };
 }
-const MARKETS = ['TSE', 'TSX', 'TSX-V', 'NASDAQ', 'NYSE', 'AMEX', 'OTCBB', 'INDEXSP'];
+const MARKETS = [
+  'TSE',
+  'TSX',
+  'TSX-V',
+  'NASDAQ',
+  'NYSE',
+  'AMEX',
+  'OTCBB',
+  'INDEXSP',
+];
 
 async function getStock(symbol, market = 'NYSE') {
   if (!MARKETS.includes(market) || !symbol) {
     return null;
   }
 
-  const r = await fetch(`https://www.google.com/search?q=${escape(symbol)}+${escape(market)}`);
-  console.log('status=', r.status);
+  const r = await fetch(
+    `https://www.google.com/search?q=${escape(symbol)}+${escape(market)}`
+  );
+  console.log('status = ', r.status);
   const d = await r.text();
   const $ = cheerio.load(d);
 
   const rawData = $('span:contains("Stock Price")')
-  .parent()
-  .parent()
-  .find(' > div')
-  .find(' > div')
-  .text()
-  .replace(/\n/g, '');
-  
-  console.log(rawData);
-  
+    .parent()
+    .parent()
+    .find(' > div')
+    .find(' > div')
+    .text()
+    .replace(/\n/g, '');
+
+  console.log('raw data = ', rawData);
+
   return parseStockDetail(rawData);
 }
 
@@ -99,15 +110,15 @@ async function getCrypto(id) {
       .replace(/[\(\)]/g, '')
       .trim();
 
-    const price = $('[data-currency-price]')
-      .data('usd')
-      .toFixed(2);
+    const price = $('[data-currency-price]').data('usd').toFixed(2);
 
     const currency = $('.details-panel-item--price [data-currency-code]')
       .text()
       .trim();
 
-    const changePercentage = $('.details-panel-item--price .h2 [data-format-percentage]')
+    const changePercentage = $(
+      '.details-panel-item--price .h2 [data-format-percentage]'
+    )
       .text()
       .trim();
 
@@ -127,7 +138,9 @@ async function getCrypto(id) {
 }
 async function getWeather(city) {
   try {
-    const r = await fetch(`https://www.google.com/search?q=${escape(city)}+weather`);
+    const r = await fetch(
+      `https://www.google.com/search?q=${escape(city)}+weather`
+    );
     const d = await r.text();
     const $ = cheerio.load(d);
     const location = $('span:contains("Weather").BNeawe')
@@ -142,7 +155,7 @@ async function getWeather(city) {
       .parent()
       .parent()
       .find('div.BNeawe > div')
-      .each(function() {
+      .each(function () {
         data.push(cheerio(this).text());
       });
 
