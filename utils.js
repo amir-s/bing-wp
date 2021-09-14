@@ -37,9 +37,8 @@ function parseDescription(description) {
 }
 
 function parseStockDetail(raw) {
-  const data = /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)(?:After hours:[ \.\d-\+]+\([\d\.%]+\))?([^ ]*)\((.*)\)/.exec(
-    raw
-  );
+  const data =
+    /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)(?:After hours:[ \.\d-\+]+\([\d\.%]+\))?([^ ]*)\((.*)\)/.exec(raw);
 
   if (!data) return null;
 
@@ -55,25 +54,14 @@ function parseStockDetail(raw) {
     currency,
   };
 }
-const MARKETS = [
-  'TSE',
-  'TSX',
-  'TSX-V',
-  'NASDAQ',
-  'NYSE',
-  'AMEX',
-  'OTCBB',
-  'INDEXSP',
-];
+const MARKETS = ['TSE', 'TSX', 'TSX-V', 'NASDAQ', 'NYSE', 'AMEX', 'OTCBB', 'INDEXSP'];
 
 async function getStock(symbol, market = 'NYSE') {
   if (!MARKETS.includes(market) || !symbol) {
     return null;
   }
 
-  const r = await fetch(
-    `https://www.google.com/search?q=${escape(symbol)}+${escape(market)}`
-  );
+  const r = await fetch(`https://www.google.com/search?q=${escape(symbol)}+${escape(market)}`);
   console.log('status = ', r.status);
   const d = await r.text();
   const $ = cheerio.load(d);
@@ -93,44 +81,15 @@ async function getStock(symbol, market = 'NYSE') {
 
 async function getCrypto(id) {
   try {
-    const r = await fetch(`https://coinmarketcap.com/currencies/${id}`);
-    const d = await r.text();
-    const $ = cheerio.load(d);
-
-    const name = $('.details-panel-item--name')
-      .clone()
-      .children()
-      .remove()
-      .end()
-      .text()
-      .trim();
-
-    const symbol = $('.details-panel-item--name span')
-      .text()
-      .replace(/[\(\)]/g, '')
-      .trim();
-
-    const price = $('[data-currency-price]').data('usd').toFixed(2);
-
-    const currency = $('.details-panel-item--price [data-currency-code]')
-      .text()
-      .trim();
-
-    const changePercentage = $(
-      '.details-panel-item--price .h2 [data-format-percentage]'
-    )
-      .text()
-      .trim();
-
-    const logo = $('.logo-32x32').attr('src');
+    const r = await fetch(`https://api.cryptowat.ch/markets/kraken/${id}usd/summary`);
+    const d = await r.json();
 
     return {
-      name,
-      symbol,
-      price,
-      currency,
-      changePercentage,
-      logo,
+      id: id.toUpperCase(),
+      symbol: id.toUpperCase(),
+      price: d.result.price.last,
+      currency: 'USD',
+      changePercentage: d.result.price.change.percentage,
     };
   } catch (_) {
     return null;
@@ -138,16 +97,10 @@ async function getCrypto(id) {
 }
 async function getWeather(city) {
   try {
-    const r = await fetch(
-      `https://www.google.com/search?q=${escape(city)}+weather`
-    );
+    const r = await fetch(`https://www.google.com/search?q=${escape(city)}+weather`);
     const d = await r.text();
     const $ = cheerio.load(d);
-    const location = $('span:contains("Weather").BNeawe')
-      .parent()
-      .prev()
-      .prev()
-      .text();
+    const location = $('span:contains("Weather").BNeawe').parent().prev().prev().text();
 
     const data = [];
     $('span:contains("Weather").BNeawe')

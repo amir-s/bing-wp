@@ -16,16 +16,16 @@ const router = new Router();
 
 const db = new DB('./cache.json');
 
-router.get('/v1/photo/random', ctx => {
+router.get('/v1/photo/random', (ctx) => {
   const index = Math.floor(Math.random() * photos.length);
   ctx.body = photos[index];
 });
 
-router.get('/v1/photo/:index?', async ctx => {
+router.get('/v1/photo/:index?', async (ctx) => {
   ctx.body = await getImage(~~ctx.params.index);
 });
 
-router.get('/v1/stock/:symbol/:market?', async ctx => {
+router.get('/v1/stock/:symbol/:market?', async (ctx) => {
   const symbol = ctx.params.symbol.replace(/\s/g, '').toUpperCase();
   const format = (ctx.query.format || 'json').toLowerCase();
 
@@ -35,8 +35,7 @@ router.get('/v1/stock/:symbol/:market?', async ctx => {
     return;
   }
 
-  const market =
-    ctx.params.market && ctx.params.market.replace(/\s/g, '').toUpperCase();
+  const market = ctx.params.market && ctx.params.market.replace(/\s/g, '').toUpperCase();
 
   console.log('requesting stock price for ', symbol, market);
 
@@ -64,7 +63,7 @@ router.get('/v1/stock/:symbol/:market?', async ctx => {
   }
 });
 
-router.get('/v1/crypto/:handle', async ctx => {
+router.get('/v1/crypto/:handle', async (ctx) => {
   const format = (ctx.query.format || 'json').toLowerCase();
 
   const handle = ctx.params.handle.trim().replace(/\s/g, '-').toLowerCase();
@@ -90,7 +89,7 @@ router.get('/v1/crypto/:handle', async ctx => {
   }
 });
 
-router.get('/v1/weather/:city', async ctx => {
+router.get('/v1/weather/:city', async (ctx) => {
   const city = ctx.params.city.trim().toLowerCase();
 
   if (!city) {
@@ -110,15 +109,15 @@ router.get('/v1/weather/:city', async ctx => {
   ctx.body = data;
 });
 
-router.get('/', ctx => {
+router.get('/', (ctx) => {
   ctx.body = 'Hello!';
 });
 
-router.get('/version', ctx => {
+router.get('/version', (ctx) => {
   ctx.body = { version: '0.0.6' };
 });
 
-router.get('*', ctx => {
+router.get('*', (ctx) => {
   ctx.status = 404;
   ctx.body = 'Not found';
 });
