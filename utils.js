@@ -89,7 +89,7 @@ async function getCrypto(id) {
       symbol: id.toUpperCase(),
       price: d.result.price.last,
       currency: 'USD',
-      changePercentage: d.result.price.change.percentage,
+      changePercentage: d.result.price.change.percentage.toFixed(3),
     };
   } catch (_) {
     return null;
