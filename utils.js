@@ -1,6 +1,6 @@
-const fetch = require('node-fetch');
-const cheerio = require('cheerio');
-const pretty = require('pretty');
+const fetch = require("node-fetch");
+const cheerio = require("cheerio");
+const pretty = require("pretty");
 
 async function getImage(index = 0) {
   const URL = `https://www.bing.com/HPImageArchive.aspx?format=js&idx=${index}&n=1`;
@@ -21,10 +21,10 @@ function parseDescription(description) {
 
   if (!parsed) {
     return {
-      title: '',
-      location: '',
-      photographer: '',
-      source: '',
+      title: "",
+      location: "",
+      photographer: "",
+      source: "",
     };
   }
 
@@ -38,7 +38,9 @@ function parseDescription(description) {
 
 function parseStockDetail(raw) {
   const data =
-    /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)(?:After hours:[ \.\d-\+]+\([\d\.%]+\))?([^ ]*)\((.*)\)/.exec(raw);
+    /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)(?:After hours:[ \.\d-\+]+\([\d\.%]+\))?([^ ]*)\((.*)\)/.exec(
+      raw
+    );
 
   if (!data) return null;
 
@@ -54,41 +56,72 @@ function parseStockDetail(raw) {
     currency,
   };
 }
-const MARKETS = ['TSE', 'TSX', 'TSX-V', 'NASDAQ', 'NYSE', 'AMEX', 'OTCBB', 'INDEXSP'];
+const MARKETS = [
+  "TSE",
+  "TSX",
+  "TSX-V",
+  "NASDAQ",
+  "NYSE",
+  "AMEX",
+  "OTCBB",
+  "INDEXSP",
+];
 
-async function getStock(symbol, market = 'NYSE') {
+async function getStock(symbol, market = "NYSE") {
   if (!MARKETS.includes(market) || !symbol) {
     return null;
   }
 
-  const r = await fetch(`https://www.google.com/search?q=${escape(symbol)}+${escape(market)}`);
-  console.log('status = ', r.status);
+  const r = await fetch(
+    `https://finance.yahoo.com/quote/${escape(symbol)}/`
+    // `https://www.google.com/search?q=${escape(symbol)}+${escape(market)}`
+  );
+  console.log("status = ", r.status);
   const d = await r.text();
   const $ = cheerio.load(d);
+  const el = $($("span:contains('Currency in USD')")[0]);
+  const currencyEl = el.text();
+  const symbolEl = el.parent().prev().text();
+  const priceEl = el.parent().parent().parent().next().text().split("\n")[0];
 
-  const rawData = $('span:contains("Stock Price")')
-    .parent()
-    .parent()
-    .find(' > div')
-    .find(' > div')
-    .text()
-    .replace(/\n/g, '');
+  const priceDetails =
+    /([\d,]+\.?\d*)([-\+]\d+\.?\d*) \(([-\+]\d+\.?\d*)%\)/.exec(priceEl);
 
-  console.log('raw data = ', rawData);
+  console.log("raw data = ", {
+    currencyEl,
+    symbolEl,
+    priceEl,
+    priceDetails,
+  });
 
-  return parseStockDetail(rawData);
+  if (!priceDetails) return null;
+
+  const [, price, change, changePercentage] = priceDetails;
+  const currencyData = /Currency in ([^ ]*)/.exec(currencyEl);
+  const currency = currencyData && currencyData[1];
+
+  return {
+    symbol: symbol.toUpperCase(),
+    market,
+    price,
+    change,
+    changePercentage,
+    currency,
+  };
 }
 
 async function getCrypto(id) {
   try {
-    const r = await fetch(`https://api.cryptowat.ch/markets/kraken/${id}usd/summary`);
+    const r = await fetch(
+      `https://api.cryptowat.ch/markets/kraken/${id}usd/summary`
+    );
     const d = await r.json();
 
     return {
       id: id.toUpperCase(),
       symbol: id.toUpperCase(),
       price: d.result.price.last,
-      currency: 'USD',
+      currency: "USD",
       changePercentage: d.result.price.change.percentage.toFixed(3),
     };
   } catch (_) {
@@ -97,24 +130,30 @@ async function getCrypto(id) {
 }
 async function getWeather(city) {
   try {
-    const r = await fetch(`https://www.google.com/search?q=${escape(city)}+weather`);
+    const r = await fetch(
+      `https://www.google.com/search?q=${escape(city)}+weather`
+    );
     const d = await r.text();
     const $ = cheerio.load(d);
-    const location = $('span:contains("Weather").BNeawe').parent().prev().prev().text();
+    const location = $('span:contains("Weather").BNeawe')
+      .parent()
+      .prev()
+      .prev()
+      .text();
 
     const data = [];
     $('span:contains("Weather").BNeawe')
       .parent()
       .parent()
       .parent()
-      .find('div.BNeawe > div')
+      .find("div.BNeawe > div")
       .each(function () {
         data.push(cheerio(this).text());
       });
 
     const [temperatureString, detail] = data;
-    const temperature = temperatureString.replace(/[^\d]/g, '');
-    const label = detail.split('\n').pop();
+    const temperature = temperatureString.replace(/[^\d]/g, "");
+    const label = detail.split("\n").pop();
 
     return {
       location,
