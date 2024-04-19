@@ -9,7 +9,7 @@
     "production": "pm2 reload ecosystem.config.js --env production"
   },
   "engines": {
-    "node": "10.x"
+    "node": "13.x"
   },
   "repository": {
     "type": "git",

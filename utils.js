@@ -37,23 +37,16 @@ function parseDescription(description) {
 }
 
 function parseStockDetail(raw) {
-  const data =
-    /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \((\d+\.?\d*)%\)(?:After hours:[ \.\d-\+]+\([\d\.%]+\))?([^ ]*)\((.*)\)/.exec(
-      raw
-    );
+  const data = /([\d,]+\.?\d*) ([-\+]\d+\.?\d*) \(([-\+]\d+\.?\d*)%\)/.exec(
+    raw.trim()
+  );
 
   if (!data) return null;
 
-  const currencyData = /Currency in ([^ ]*)/.exec(raw);
-  const currency = currencyData && currencyData[1];
-
   return {
-    symbol: data[4].toUpperCase(),
-    market: data[5].toUpperCase(),
     price: data[1],
     change: data[2],
     changePercentage: data[3],
-    currency,
   };
 }
 const MARKETS = [
@@ -73,32 +66,41 @@ async function getStock(symbol, market = "NYSE") {
   }
 
   const r = await fetch(
-    `https://finance.yahoo.com/quote/${escape(symbol)}/`
-    // `https://www.google.com/search?q=${escape(symbol)}+${escape(market)}`
+    `https://finance.yahoo.com/quote/${escape(symbol)}?guccounter=1`,
+    {
+      headers: {
+        accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-language": "en-US,en;q=0.9",
+        "cache-control": "max-age=0",
+        cookie:
+          "GUCS=ARcZIDpw; A1S=d=AQABBIMNImYCEMSBM40e9Bvq6gBNxvMPDm0FEgABCAFZI2ZRZiUHb2UB9qMAAAcIfw0iZkauShc&S=AQAAAoZw4dGILUl_e3G7IzSu77M; EuConsent=CP9UQgAP9UQgAAOACBENAwEoAP_gAEPgACiQJhNB9G7WTXNneXp2YPs0OYUX0VBJ4MAwBgCBAcABzBIUIAwGVmAzJEyIICACGAIAIGJBIABtGAhAQEAAYIAFAABIAEEAABAAIGAAACAAAABACAAAAAAAAAAQgEAXMBQgmAZEAFoIQUhAhgAgAQAAIAAEAIgBAgQAEAAAQAAICAAIACgAAgAAAAAAAAAEAFAIEQAAAAECAo9kfQTBADINSogCbAkJCAQMIoEAIgoCACgQAAAAECAAAAmCAoQBgEqMBEAIAQAAAAAAAAQEACAAACABCAAIAAgQAAAAAQAAAAACAAAEAAAAAAAAAAAAAAAAAAAAAAAAAMQAhBAACAACAAgoAAAABAAAAAAAAAARAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAQAAAAAAAABAgILAAA; GUC=AQABCAFmI1lmUUIedwRU&s=AQAAACHlOIly&g=ZiINjQ; A3=d=AQABBIMNImYCEMSBM40e9Bvq6gBNxvMPDm0FEgABCAFZI2ZRZiUHb2UB9qMAAAcIfw0iZkauShc&S=AQAAAoZw4dGILUl_e3G7IzSu77M; A1=d=AQABBIMNImYCEMSBM40e9Bvq6gBNxvMPDm0FEgABCAFZI2ZRZiUHb2UB9qMAAAcIfw0iZkauShc&S=AQAAAoZw4dGILUl_e3G7IzSu77M",
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "same-site",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1",
+        "user-agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+      },
+    }
   );
+
   console.log("status = ", r.status);
   const d = await r.text();
+
   const $ = cheerio.load(d);
-  const el = $($("span:contains('Currency in USD')")[0]);
-  const currencyEl = el.text();
-  const symbolEl = el.parent().prev().text();
-  const priceEl = el.parent().parent().parent().next().text().split("\n")[0];
-
-  const priceDetails =
-    /([\d,]+\.?\d*)([-\+]\d+\.?\d*) \(([-\+]\d+\.?\d*)%\)/.exec(priceEl);
-
-  console.log("raw data = ", {
-    currencyEl,
-    symbolEl,
-    priceEl,
-    priceDetails,
-  });
+  console.log($("div.price").text());
+  const raw = $("div.price").text();
+  const priceDetails = parseStockDetail(raw);
 
   if (!priceDetails) return null;
 
-  const [, price, change, changePercentage] = priceDetails;
-  const currencyData = /Currency in ([^ ]*)/.exec(currencyEl);
-  const currency = currencyData && currencyData[1];
+  const { price, change, changePercentage } = priceDetails;
+
+  const details = $("span.exchange").text();
+  const marketName = details.split(" - ")[0];
+  const currency = details.trim().split(" ").pop().trim();
 
   return {
     symbol: symbol.toUpperCase(),
