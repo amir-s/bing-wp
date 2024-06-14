@@ -4,12 +4,10 @@
   "description": "backend for the hello chrome extension",
   "main": "index.js",
   "scripts": {
-    "deploy": "pm2 deploy production",
-    "start": "pm2-dev index.js",
-    "production": "pm2 reload ecosystem.config.js --env production"
+    "start": "node index.js"
   },
   "engines": {
-    "node": "13.x"
+    "node": "20.x"
   },
   "repository": {
     "type": "git",
@@ -28,8 +26,7 @@
     "koa": "^2.7.0",
     "koa-logger": "^3.2.1",
     "koa-router": "^7.4.0",
-    "node-fetch": "^2.6.1",
-    "pm2": "^4.5.6"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "pretty": "^2.0.0"
