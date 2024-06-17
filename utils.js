@@ -82,11 +82,11 @@ async function getStock(symbol, market = "NYSE") {
   const d = await r.text();
 
   const $ = cheerio.load(d);
-  const raw = $("img.QuoteStrip-changeIcon").parent().text();
+  const raw = $("img.QuoteStrip-changeIcon:first").parent().text();
   const priceDetails = parseStockDetail(raw);
   if (!priceDetails) return null;
 
-  const price = $("span.QuoteStrip-lastPrice").text();
+  const price = $("span.QuoteStrip-lastPrice:first").text();
   const { change, changePercentage } = priceDetails;
   const currency = $("div.QuoteStrip-quoteStripSubHeader span:last-child")
     .text()
