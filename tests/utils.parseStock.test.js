@@ -5,7 +5,6 @@ const tests = [
     input:
       "  69.51 +0.10 (+0.14%) At close: April 18 at 4:00 PM EDT    69.06 -0.45 (-0.65%) After hours: April 18 at 7:59 PM EDT    ",
     output: {
-      price: "69.51",
       change: "+0.10",
       changePercentage: "+0.14",
     },
@@ -13,7 +12,6 @@ const tests = [
   {
     input: "  95.79 +0.17 (+0.18%) At close: April 18 at 4:00 PM EDT     ",
     output: {
-      price: "95.79",
       change: "+0.17",
       changePercentage: "+0.18",
     },
